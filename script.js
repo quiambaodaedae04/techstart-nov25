@@ -1,16 +1,5 @@
 // Configuration
-const REPO_OWNER = 'dost-start-org'; // Update this with your GitHub username
-const REPO_NAME = 'techstart-nov25';
-const MESSAGES_FOLDER = 'messages';
-const BRANCH = 'main';
-
-// Raw GitHub URL for direct file access (no API rate limits)
-const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com';
-const MANIFEST_FILE = 'manifest.json';
-
-function buildRawUrl(filename) {
-    return `${GITHUB_RAW_BASE}/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${MESSAGES_FOLDER}/${filename}`;
-}
+const MANIFEST_FILE = 'messages/manifest.json';
 
 /**
  * Fetch all JSON files from the messages folder using GitHub API
@@ -45,13 +34,12 @@ async function fetchMessages() {
     // return;
 
     try {
-        // Fetch manifest to know which files to load
-        const manifestUrl = buildRawUrl(MANIFEST_FILE);
-        const manifestResponse = await fetch(manifestUrl);
+        // Fetch manifest directly as a local file
+        const manifestResponse = await fetch(MANIFEST_FILE);
 
         if (!manifestResponse.ok) {
             if (manifestResponse.status === 404) {
-                throw new Error('Manifest not found. Run the manifest update script or wait for the GitHub Action to regenerate it.');
+                throw new Error('Manifest not found. Run the manifest update script to generate it.');
             }
             throw new Error(`Failed to fetch manifest: ${manifestResponse.status}`);
         }
@@ -141,7 +129,7 @@ function showErrorState(containerEl, errorMessage) {
         <div class="error-state">
             <h2>⚠️ Error loading messages</h2>
             <p>${escapeHtml(errorMessage)}</p>
-            <p style="margin-top: 10px;">Make sure the repository is public and the GitHub username is correctly configured.</p>
+            <p style="margin-top: 10px;">Make sure the manifest.json file exists in the messages folder.</p>
         </div>
     `;
 }
